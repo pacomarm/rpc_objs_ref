@@ -1,5 +1,5 @@
-Para compilar el servidor usar:
-cc skeleton.c utils.c -o server
+Compile:
+cc server.c adapter_svc.c utils.c -o server
 
-Para correr:
+Run:
 ./server

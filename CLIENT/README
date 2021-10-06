@@ -1,5 +1,5 @@
-Para compilar usar:
-cc client.c stub.c utils.c -o client
+Compile:
+cc client.c adapter_clnt.c utils.c -o client
 
-Para ejecutar
+Run:
 ./client

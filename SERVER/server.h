@@ -31,3 +31,5 @@ int close(int sock);
 // servicio(s)
 
 int store(char * m);                        // copy-restore
+void send_result(int client_sock, person* peep, int size);
+char * getObject(int client_sock);

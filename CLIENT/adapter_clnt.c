@@ -31,6 +31,7 @@ void store(person * ptr, int size)
     char street[50];
     char number[12];
     strncpy ( name, m, 12 ); // store the name of person in name array
+    name[12] = '\0';
     strncpy ( city, m+12, 10 ); // store the city of person in city array
     strncpy ( street, m+23, 11 ); // store the street of person in steet array
     strncpy ( number, m+35, 3 ); // store the address number of person in number variable

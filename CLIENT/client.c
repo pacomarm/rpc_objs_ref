@@ -9,11 +9,11 @@ int main( int argc, char * argv[] )
 {
 
     person peep = { 
-        .name = "Lil Peep",
+        .name = "XXTentacion",
         .addy = {
-            .street = "Hollywood Boulevard",
+            .street = "HollyStreet",
             .number = 419,
-            .city   = "Los Angeles, CA" 
+            .city   = "LosAngeles" 
         }
     };
     printf("Estructura Original:\n");

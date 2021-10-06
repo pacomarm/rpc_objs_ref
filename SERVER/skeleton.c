@@ -1,8 +1,8 @@
 
 #include "server.h"
 
-void recv_message(int client_sock, person *ptr, int size);
 void send_result(int client_sock, person* peep, int size);
+char * getObject(int client_sock);
 
 extern struct sockaddr_in client;
 
@@ -14,12 +14,34 @@ int main(int argc, char *argv[])
         
         int client_sock = connection(socket_desc);
         person peep;
-        recv_message(client_sock, &peep, sizeof(peep));           // adaptador del parámetro        
+        
+        char * m = getObject(client_sock);
+        char name[20];
+        char city[50];
+        char street[50];
+        char number[12];
+        strncpy ( name, m, 12 );
+        strncpy ( city, m+12, 10 );
+        strncpy ( street, m+23, 11 );
+        strncpy ( number, m+35, 3 );
+        street[11] = '\0';
+        strncpy(peep.name, name, sizeof(peep.name));
+        strncpy(peep.addy.city, city, sizeof(peep.addy.city));
+        strncpy(peep.addy.street, street, sizeof(peep.addy.street));
+        peep.addy.number = atoi(number);
+        
+        printf("\nEstructura Recibida:\n");
+        printf("Name: %s\n", peep.name);
+        printf("City: %s\n", peep.addy.city);
+        printf("Street: %s\n", peep.addy.street);
+        printf("Number: %d\n\n", peep.addy.number);
 
-        strncpy(peep.name, "Kendick Lamar", sizeof(peep.name));
-        strncpy(peep.addy.street, "Grove Street", sizeof(peep.addy.street));
-        peep.addy.number = 1738;
-        strncpy(peep.addy.city, "Compton, CA", sizeof(peep.addy.city));
+        strncpy(peep.name, "KendrickFoo", sizeof(peep.name));
+        strncpy(peep.addy.city, "SanDiegoCA", sizeof(peep.addy.city));
+
+        printf("\nValores Modificados:\n");
+        printf("Name: %s\n", peep.name);
+        printf("City: %s\n\n", peep.addy.city);
     
         send_result(client_sock, &peep, sizeof(peep));                // adaptador del resultado                                      // liberamos los recursos
     }
@@ -28,12 +50,17 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void recv_message(int client_sock, person* peep, int size)
+char * getObject(int client_sock)
 {
+    char * message;
     int read_size, length;
-    int c = sizeof(struct sockaddr_in);
     
-    read_size = recvfrom(client_sock, peep, size, 0, (struct sockaddr*) &client, (socklen_t*) &c);
+    // receive the message length from client
+    read_size = recv(client_sock, &length, sizeof(length), 0);
+    
+    // dynamic memory allocation to store the message: LITTLE ENDIAN
+    message = (char *) malloc(length);                  // incluye el fin de cadena
+    read_size = recv(client_sock, message, length, 0);
     
     if(read_size == 0) {
         puts("Client disconnected");
@@ -42,13 +69,24 @@ void recv_message(int client_sock, person* peep, int size)
     else if(read_size == -1) {
         perror("recv failed");
     }
-
+    
+    return message;
 }
 
 void send_result(int client_sock, person* peep, int size)
 {
-    if( sendto(client_sock, peep, size, 0, (struct sockaddr*) &client, sizeof(client)) < 0) {
-        puts("Send failed");
+
+    char str[12];
+    snprintf(str, 12, "%d", peep->addy.number);
+    char buf[256];
+    snprintf(buf, sizeof(buf), "%s %s %s %s", peep->name, peep->addy.city, peep->addy.street, str);
+    //
+    int length = strlen(buf);
+    send(client_sock, &length, sizeof(length), 0);
+    
+    if(send(client_sock, &buf, length, 0) < 0) {
+        puts("Send fails");
         exit(1);
     }
+
 }

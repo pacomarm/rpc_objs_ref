@@ -1,6 +1,3 @@
-
-// store messages using a service
-
 #include "client.h"
 
 int sock;
@@ -8,7 +5,7 @@ int sock;
 int main( int argc, char * argv[] )
 {
 
-    person peep = { 
+    person peep = { // Creating the person object
         .name = "XXTentacion",
         .addy = {
             .street = "HollyStreet",
@@ -16,28 +13,26 @@ int main( int argc, char * argv[] )
             .city   = "LosAngeles" 
         }
     };
+
     printf("Estructura Original:\n");
     printf("Name: %s\n", peep.name);
     printf("City: %s\n", peep.addy.city);
     printf("Street: %s\n", peep.addy.street);
     printf("Number: %d\n", peep.addy.number);
 
-    person *peep_ptr = &peep;
+    person *peep_ptr = &peep; // Pointer to person object
 
-    // peep_ptr->addy.number = 6969;
-    // printf("Street No: %d\n", peep_ptr->addy.number);
-
-    sock = connection();            // conección con el servidor
-                                    // para llamar servicios
+    sock = connection();            // server connection
     
-    store( peep_ptr, sizeof(peep));        // llamada local (servicio store)
+    store( peep_ptr, sizeof(peep));    // local call, passing the reference of person object
 
     printf("---------\n");
-    printf("Estructura Modificada:\n");
+    printf("Estructura Modificada:\n"); // Printing the modified person object after getting 
+                                        // remote call to server (RESTORE)
     printf("Name: %s\n", peep.name);
     printf("City: %s\n", peep.addy.city);
     printf("Street: %s\n", peep.addy.street);
     printf("Number: %d\n", peep.addy.number);
-    close(sock);                    // cerrar la conección
+    close(sock);                    // close connection
     return 0;
 }
